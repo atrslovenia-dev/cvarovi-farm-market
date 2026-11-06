@@ -90,14 +90,15 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           onSubmit={(e) => {
             e.preventDefault();
             const f = new FormData(e.currentTarget);
+            const category = String(f.get("category"));
             const p: Product = {
               id: edit?.id ?? crypto.randomUUID(),
               name: String(f.get("name")),
-              category: String(f.get("category")),
+              category,
               price: Number(f.get("price")),
               unit: String(f.get("unit")),
               description: String(f.get("description")),
-              image: img || edit?.image || "",
+              image: img || edit?.image || DEFAULT_PRODUCTS.find((d) => d.category === category)?.image || "",
             };
             persist(edit ? items.map((i) => (i.id === p.id ? p : i)) : [p, ...items]);
             setEdit(null);
@@ -128,7 +129,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <tbody>
             {items.map((p) => (
               <tr key={p.id} className="border-b border-border">
-                <td className="flex items-center gap-3 py-3"><img src={p.image} alt="" className="h-12 w-12 rounded-md object-cover" />{p.name}</td>
+                <td className="flex items-center gap-3 py-3">{p.image ? <img src={p.image} alt="" className="h-12 w-12 rounded-md object-cover" /> : <span className="grid h-12 w-12 place-items-center rounded-md bg-secondary text-[10px] text-muted-foreground">BREZ</span>}{p.name}</td>
                 <td>{p.category}</td>
                 <td>{eur(p.price)} / {p.unit}</td>
                 <td className="space-x-3 text-right">

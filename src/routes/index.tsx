@@ -80,7 +80,11 @@ function Shop() {
           {shown.map((p) => (
             <article key={p.id} className="group overflow-hidden rounded-2xl border border-border bg-card shadow-warm">
               <div className="aspect-[4/3] overflow-hidden">
-                <img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+                {p.image ? (
+                  <img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-secondary text-center text-sm text-muted-foreground">Brez slike</div>
+                )}
               </div>
               <div className="p-6">
                 <p className="text-xs uppercase tracking-widest text-muted-foreground">{p.category}</p>

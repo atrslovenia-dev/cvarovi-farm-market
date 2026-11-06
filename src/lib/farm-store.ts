@@ -61,10 +61,24 @@ const PK = "cvar_products_v2";
 const CK = "cvar_cart";
 const AK = "cvar_admin";
 
+const BY_ID = new Map(DEFAULT_PRODUCTS.map((p) => [p.id, p]));
+const BY_CAT = new Map(DEFAULT_PRODUCTS.map((p) => [p.category, p]));
+
+// Stored records can be older than the current photos, so any product without a
+// picture is repaired with the matching sample photo before it reaches the page.
 export function loadProducts(): Product[] {
   try {
     const raw = localStorage.getItem(PK);
-    return raw ? JSON.parse(raw) : DEFAULT_PRODUCTS;
+    if (!raw) return DEFAULT_PRODUCTS;
+    const stored = JSON.parse(raw);
+    if (!Array.isArray(stored) || stored.length === 0) return DEFAULT_PRODUCTS;
+    return stored
+      .filter((p): p is Product => !!p && typeof p.name === "string")
+      .map((p) => {
+        const fallback = BY_ID.get(p.id) ?? BY_CAT.get(p.category);
+        const image = typeof p.image === "string" && p.image.trim() ? p.image : fallback?.image ?? "";
+        return { ...p, image };
+      });
   } catch {
     return DEFAULT_PRODUCTS;
   }
